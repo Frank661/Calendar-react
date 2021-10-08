@@ -12,7 +12,7 @@ export default function SmallCalendar() {
        setCurrentMonth(getMonth(currentMonthIdx))
     }, [currentMonthIdx]);
 
-    const { monthIndex } = useContext(GlobalContext)
+    const { monthIndex, setSmallCalendarMonth, setDaySelected, daySelected } = useContext(GlobalContext)
 
     useEffect(() => {
         setCurrentMonthIdx(monthIndex)
@@ -28,11 +28,14 @@ export default function SmallCalendar() {
         const format = "DD-MM-YY"
         const nowDay = dayjs().format(format)
         const currDay = day.format(format)
+        const selectedDay = daySelected && daySelected.format(format)
 
         if(nowDay === currDay){
             return "bg-blue-500 rounded-full text-white"
+        } else if (currDay === selectedDay){
+            return "bg-blue-100 rounded-full text-blue-600 font-bold"
         } else {
-            return ""
+            return "";
         }
     }
 
@@ -41,6 +44,8 @@ export default function SmallCalendar() {
             <header className="flex justify-between">
                 <p className="text-gray-500 font-bold">
                     {dayjs(new Date(dayjs().year(), currentMonthIdx)).format("MMMM YYYY")}
+                </p>
+                <div>   
                     <button onClick={handlePrevMonth}>
                         <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
                             chevron_left
@@ -51,7 +56,7 @@ export default function SmallCalendar() {
                             chevron_right
                         </span>
                     </button>
-                </p>
+                </div>
             </header>
             <div className="grid grid-cols-7">
                 {currentMonth[0].map((day, i) =>(
@@ -62,7 +67,12 @@ export default function SmallCalendar() {
                  {currentMonth.map((row, i) => (
                      <React.Fragment key = {i}>
                         {row.map((day, idx) => (
-                            <button key={idx} className={`py-1 w-full ${getDayClass(day)}`}>
+                            <button 
+                                key={idx} 
+                                className={`py-1 w-full ${getDayClass(day)}`}
+                                onClick={() => {setSmallCalendarMonth(currentMonthIdx);
+                                                setDaySelected(day)}}
+                                >
                                 <span className="text-sm">{day.format('D')}</span>
                             </button>
                         ))}
